@@ -28,7 +28,7 @@ async function buildTables() {
          hint VARCHAR DEFAULT '1234'
          );
       CREATE TABLE exercise(
-          "exerciseId" SERIAL PRIMARY KEY,
+          exercise_id SERIAL PRIMARY KEY,
           "exerciseName" VARCHAR(255) NOT NULL,
           "userId" INTEGER,
           CONSTRAINT fk_user FOREIGN KEY("userId")
@@ -44,31 +44,32 @@ async function buildTables() {
           );
       CREATE TABLE routine_exer(
           "routineId" INTEGER NOT NULL,
-          "exerciseId" INTEGER NOT NULL,
-          UNIQUE ("routineId", "exerciseId"),
+          exercise_id INTEGER NOT NULL,
+          UNIQUE ("routineId", exercise_id),
           CONSTRAINT fk_routine_exer1
           FOREIGN KEY("routineId")
           REFERENCES routine("routineId"),
           CONSTRAINT fk_routine_exer2
-          FOREIGN KEY("exerciseId")
-          REFERENCES exercise("exerciseId") 
+          FOREIGN KEY(exercise_id)
+          REFERENCES exercise(exercise_id) 
           );
       CREATE TABLE workout(
           "workoutId" SERIAL PRIMARY KEY,
           "routineId" INTEGER,
-          "exerciseId" INTEGER NOT NULL,
+          exercise_id INTEGER NOT NULL,
           workout_date DATE NOT NULL DEFAULT CURRENT_DATE,
           reps NUMERIC(4,0),
           total_sets NUMERIC(3,0),
-          duration SMALLINT,
+          duration NUMERIC(5,2),
           distance NUMERIC(5,2),
           weight NUMERIC(5,2),
+          notes VARCHAR(255),
           CONSTRAINT fk_workout
           FOREIGN KEY("routineId")
           REFERENCES routine("routineId"),
           CONSTRAINT fk_workout1
-          FOREIGN KEY("exerciseId")
-          REFERENCES exercise("exerciseId")
+          FOREIGN KEY(exercise_id)
+          REFERENCES exercise(exercise_id)
           );
       CREATE TABLE weight_tracker(
           "userId" INTEGER,
@@ -105,9 +106,9 @@ async function populateInitialData() {
           ('pushups',2),
           ('situps', 2);
           INSERT INTO workout
-          ("exerciseId", workout_date, reps, total_sets)
+          (exercise_id, workout_date, reps, total_sets, notes)
           VALUES
-          (1, '2020-12-22', 25, 3 );
+          (1, '2020-12-22', 25, 3, 'This is a test' );
       `)
 
   } catch (error) {

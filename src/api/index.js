@@ -52,9 +52,19 @@ export async function createExercise(userId, exercise) {
 }
 
 export async function createRoutine(userId, routineName, exerciseIds) {
-
+    console.log('api/index',userId, routineName, exerciseIds);
     try {
         const { data } = await axios.post(`/api/user/${userId}/routine`, {routineName , exerciseIds})
+        return data;
+    } catch (err) {
+        throw err
+    }
+}
+
+export async function addWorkout(userId, fields = {}) {
+    console.log(Object.values(fields));
+    try {
+        const { data } = await axios.post(`/api/user/${userId}/workout`, fields)
         return data;
     } catch (err) {
         throw err

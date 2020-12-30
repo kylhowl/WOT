@@ -30,18 +30,23 @@ const App = () => {
   useEffect( ()=> {
     const workoutArray = [];
     if (featureEx) {
-      for ( let workout of user.single_workouts ) {
-        if (featureEx === workout.exerciseName) {
+      for ( let workout of user.workouts ) {
+        if (featureEx.exerciseId === workout.exerciseId) {
           workoutArray.push(workout)
         }
       }
     } else if (featureRoutine) {
-      for ( let routine of user.routines) {
-        return
+      for ( let workout of user.workouts) {
+        if (featureRoutine.routineId === workout.routineId) {
+          workoutArray.push(workout)
+        }
       }
     }
+    if (workoutArray.length) {
+    setWorkouts(workoutArray)
+    }
   }
-  , [setFeatureEx, setFeatureRoutine])
+  , [featureEx, featureRoutine])
 
   return (
     <>
@@ -60,11 +65,11 @@ const App = () => {
       </Col>
     </Row>   
     <Row className='exercise-info bg-warning'>
-      <Col sm>
-        <Exercises user={user} setFeatureEx={setFeatureEx} setBulletin={setBulletin}/>
+      <Col >
+        <Exercises user={user} setFeatureEx={setFeatureEx} setFeatureRoutine={setFeatureRoutine} setBulletin={setBulletin}/>
       </Col>
-      <Col>
-        { featureEx || featureRoutine ? <Report exercise={featureEx ? featureEx : featureRoutine} /> : <div> Login and select an exercise. </div>}
+      <Col >
+        { featureEx || featureRoutine ? <Report exercise={featureEx ? featureEx : featureRoutine} workouts={workouts} /> : <div> Login and select an exercise. </div>}
       </Col>
     </Row>
     <Row>

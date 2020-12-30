@@ -7,3 +7,4 @@ export { default as Addworkout } from './Update';
 export { default as AddExercise } from './AddExer';
 export { default as AddRoutine } from './AddRoutine';
 export { default as Bulletin } from './Bulletin';
+export { default as AddWO } from './AddWO';

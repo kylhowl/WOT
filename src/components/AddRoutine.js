@@ -17,6 +17,7 @@ function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } 
         e.preventDefault();
         e.persist();
         for (let routine of routines) {
+            console.log('routine ',routine.routineName.toUpperCase(), ' newRoutine', newRoutine.toUpperCase() )
             if (routine.routineName.toUpperCase() === newRoutine.toUpperCase()) {
                 setBulletin(`Routine ${newRoutine} Already Exists`);
                 handleClose();
@@ -47,8 +48,11 @@ function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } 
 
         const results = await createRoutine(userId, newRoutine, exerciseIdArray)
 
-        console.log('results from create routine', results)
-
+        if (results.message) {
+            setBulletin(`${newRoutine.toUpperCase()} Routine Created Succesfully!`)
+            
+            handleClose();
+        }
     }
     
 
@@ -71,7 +75,7 @@ function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } 
                     <Form.Group id='routine_exer_form' required>
                         <Form.Label>EXERCISES</Form.Label>
                         {exercises.map((exer)=>
-                            <Form.Check key={exer.exerciseName} type='checkbox' label={exer.exerciseName} className='formCheckboxes' value={exer.exerciseId} />
+                            <Form.Check key={exer.exerciseName} type='checkbox' label={exer.exerciseName.toUpperCase()} className='formCheckboxes' value={exer.exerciseId} />
                         )}
                     </Form.Group>
                     <Button variant='primary' type='submit'>CREATE {newRoutine.toUpperCase()}</Button>

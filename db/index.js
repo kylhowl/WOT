@@ -72,31 +72,46 @@ const _getWorkouts = async (user) => {
     let userId = user.userId;
 
   try { 
-      const { rows : single_workouts } = await client.query(`
+    const { rows : workouts } = await client.query(`
+    SELECT * FROM exercise
+    NATURAL JOIN workout
+    WHERE exercise."userId"=$1;
+    `,[userId]);
+
+    const { rows : routines } = await client.query(`
+      SELECT "routineId", "routineName"
+      FROM routine
+      WHERE "userId"=$1;
+    `,[userId]);
+
+    const routineIds = routines.map((routine)=> routine.routineId);
+    const selectValues = routineIds.map((_,index)=> `$${index+1}`).join(`, `);
+
+    if (selectValues) {
+
+    const { rows : exerciseIds } = await client.query(`
+      SELECT exercise_id, "routineId"
+      FROM routine_exer
+      WHERE "routineId" IN (${selectValues});
+    `, routineIds);
+    
+    for (let routine of routines) {
+      routine.exerciseIds = []
+      for (let x of exerciseIds) {
+        if (x.routineId == routine.routineId) {
+          routine.exerciseIds.push(x.exercise_id)
+        }
+      }
+    }
+    }
+
+    const { rows : exercises } = await client.query(`
       SELECT * FROM exercise
-      NATURAL JOIN workout
-      WHERE "routineId" is null AND exercise."userId"=$1;
-      `,[userId]);
-
-      const { rows : routine_workouts } = await client.query(`
-      SELECT * FROM exercise
-      NATURAL JOIN workout
-      WHERE "routineId" IS NOT NULL AND exercise."userId"=$1;
-      `,[userId]);
-
-      const { rows : routines } = await client.query(`
-        SELECT "routineId", "routineName"
-        FROM routine
-        WHERE "routineId"=$1;
-      `,[userId]);
-
-      const { rows : exercises } = await client.query(`
-        SELECT * FROM exercise
-        WHERE "userId"=$1;
-      `, [userId]);
-
-    user.single_workouts = single_workouts;
-    user.routine_workouts = routine_workouts;
+      WHERE "userId"=$1;
+    `, [userId]);
+    
+    
+    user.workouts = workouts;
     user.routines = routines;
     user.exercises = exercises;
     
@@ -110,7 +125,7 @@ const _getWorkouts = async (user) => {
 const createExercise = async ( userId, exercise ) => {
     
   try {
-      const { rows : [newEx] } =await client.query(`
+      const { rows : [newEx] } = await client.query(`
         INSERT INTO exercise("exerciseName", "userId")
         VALUES ($1, $2)
         RETURNING *;
@@ -123,14 +138,41 @@ const createExercise = async ( userId, exercise ) => {
   }
 }
 
-const updateWorkout = async (userId, id, history) => {
+const createRoutine = async ( userId, routineName, exerciseIds) => {
 
   try {
+    const { rows : [routineId]} = await client.query(`
+      INSERT INTO routine("routineName", "userId")
+      VALUES ($1, $2)
+      RETURNING "routineId";
+    `,[routineName, userId]);
+
+    const insertValues = exerciseIds.map(( _, index ) => `$1, $${index+2}`).join(`), (`);
+    await client.query(`
+      INSERT INTO routine_exer("routineId", exercise_id)
+      VALUES (${insertValues});
+    `,[routineId.routineId,...exerciseIds]);
+
+    return { routineName, routineId: routineId.routineId, exerciseIds, message : 'Routine created succesfully!'};
+
+  } catch (err) {
+    throw err
+  }
+}
+
+const addWorkout = async (userId, fields = {}) => {
+  console.log(fields)
+  const insertColumns = Object.keys(fields).join(`, `);
+  const insertValues = Object.values(fields);
+  const insertString = insertValues.map((_,index)=>`$${index+1}`).join(`, `);
+  console.log('columns', insertColumns, 'values', insertValues, 'string', insertString);
+  
+  try {
       await client.query(`
-          UPDATE workouts
-          SET history=$1
-          WHERE "userId"=${userId} AND id=${id};
-      `,[history]);      
+        INSERT INTO workout(${insertColumns})
+        VALUES (${insertString})
+        RETURNING *;
+      `,insertValues);      
 
   return {
       message: 'Workout updated successfully'
@@ -171,8 +213,9 @@ const createUser = async (fields = {}) => {
 
 module.exports = {
   client,
-  updateWorkout,
+  addWorkout,
   createExercise,
+  createRoutine,
   deleteWorkout,
   getHint,
   userLogin,

@@ -4,8 +4,11 @@ const {
   userLogin,
   createUser,
   createExercise,
-  updateWorkout
+  createRoutine,
+  addWorkout
 } = require('../db');
+
+
 
 apiRouter.post('/login', async (req, res, next) => {
   
@@ -34,8 +37,6 @@ apiRouter.post('/register', async (req, res, next) => {
 
 })
 
-
-
 apiRouter.post('/user/:userId/exercise', async (req, res, next) => {
   const { userId } = req.params;
   const { exercise } = req.body;
@@ -48,6 +49,31 @@ apiRouter.post('/user/:userId/exercise', async (req, res, next) => {
       next(err);
   }
 });
+
+apiRouter.post(`/user/:userId/routine`, async (req, res, next) => {
+  const { userId } = req.params;
+  const { routineName , exerciseIds } = req.body;
+
+  try {
+    const results = await createRoutine(userId, routineName, exerciseIds);
+    res.send(results);
+  } catch (err) {
+    next(err)
+  }
+
+})
+
+apiRouter.post(`/user/:userId/workout`, async (req, res, next) => {
+  const { userId } = req.params;
+  const fields = req.body;
+  
+  try {
+    const results = await addWorkout(userId, fields);
+    res.send(results);
+  } catch (err) {
+    next(err)
+  }
+})
 
 apiRouter.get("/", (req, res, next) => {
   res.send({
