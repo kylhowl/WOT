@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap'
-import {Title, Login, Exercises, Report, Bulletin} from './index';
+import {Title, Login, Exercises, Report, Bulletin, All} from './index';
 
 
 
@@ -41,12 +41,20 @@ const App = () => {
           workoutArray.push(workout)
         }
       }
-    }
+    } else if (user.workouts) { setWorkouts(user.workouts)}
     if (workoutArray.length) {
     setWorkouts(workoutArray)
     }
   }
-  , [featureEx, featureRoutine])
+  , [featureEx, featureRoutine, user.workouts])
+
+  const checkUser = () => {
+    if (!user) { return (<div>LOGIN OR REGISTER TO GET STARTED</div>) } 
+          else { return  featureEx || featureRoutine 
+          ? <Report exercise={featureEx ? featureEx : featureRoutine} setBulletin={setBulletin} workouts={workouts} setUser={setUser} setWorkouts={setWorkouts} user={user}/>
+          :
+          <All workouts={workouts} setBulletin={setBulletin} setUser={setUser} setWorkouts={setWorkouts} user={user}/>}
+  }
 
   return (
     <>
@@ -69,7 +77,7 @@ const App = () => {
         <Exercises user={user} setFeatureEx={setFeatureEx} setFeatureRoutine={setFeatureRoutine} setBulletin={setBulletin}/>
       </Col>
       <Col >
-        { featureEx || featureRoutine ? <Report exercise={featureEx ? featureEx : featureRoutine} workouts={workouts} /> : <div> Login and select an exercise. </div>}
+        {checkUser()}
       </Col>
     </Row>
     <Row>

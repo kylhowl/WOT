@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Button, Fragment } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import AddExercise from './AddExer';
 import AddRoutine from './AddRoutine';
 

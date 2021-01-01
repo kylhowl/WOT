@@ -8,3 +8,6 @@ export { default as AddExercise } from './AddExer';
 export { default as AddRoutine } from './AddRoutine';
 export { default as Bulletin } from './Bulletin';
 export { default as AddWO } from './AddWO';
+export { default as History } from './History';
+export { default as EditEx } from './EditEx';
+export { default as All } from './All';

@@ -9,7 +9,6 @@ export async function getSomething() {
   }
 }
 
-// try {} catch (err) {throw err}      <------copy paste try catch
 
 // export functions that are used in app for specific calls to routes;
 export async function loginUser(info) {
@@ -52,9 +51,9 @@ export async function createExercise(userId, exercise) {
 }
 
 export async function createRoutine(userId, routineName, exerciseIds) {
-    console.log('api/index',userId, routineName, exerciseIds);
+    
     try {
-        const { data } = await axios.post(`/api/user/${userId}/routine`, {routineName , exerciseIds})
+        const { data } = await axios.post(`/api/user/${userId}/routine`, {routineName , exerciseIds});
         return data;
     } catch (err) {
         throw err
@@ -62,11 +61,37 @@ export async function createRoutine(userId, routineName, exerciseIds) {
 }
 
 export async function addWorkout(userId, fields = {}) {
-    console.log(Object.values(fields));
+    
     try {
-        const { data } = await axios.post(`/api/user/${userId}/workout`, fields)
+        const { data } = await axios.post(`/api/user/${userId}/workout`, fields);
         return data;
     } catch (err) {
         throw err
     }
 }
+
+export async function workoutEdit(workout, fields) {
+
+    try {
+        const { data } = await axios.patch(`/api/user/${workout.userId}/workout/${workout.workoutId}`, fields);
+        return data
+    } catch (err) {
+        throw err
+    }
+}
+
+export async function deleteWorkout(workout) {
+
+    try {
+        const { data } = await axios.delete(`/api/user/${workout.userId}/workout/${workout.workoutId}`)
+        return data
+    } catch (err) {
+        throw err
+}
+}
+
+// try {
+
+// } catch (err) {
+//     throw err
+// }      <------copy paste try catch

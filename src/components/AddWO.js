@@ -5,7 +5,7 @@ import { addWorkout } from '../api';
 var dateFormat = require('dateformat');
 var now = new Date();
 
-const AddWO = ({exercise}) => {
+const AddWO = ({exercise, workouts, setWorkouts}) => {
 
     const [ show, setShow ] = useState(false);
     const [ workout_date, setworkout_date ] = useState(dateFormat(now, 'isoDate'));
@@ -26,8 +26,13 @@ const AddWO = ({exercise}) => {
         const fields = {exercise_id: exercise.exercise_id, workout_date , reps, total_sets, duration, distance, weight, notes}
         console.log('this is fields object', fields);
         const results = await addWorkout(exercise.userId, fields)
-        console.log(results);
-        if (results.message) { handleClose() };
+        console.log('results from addWO', results);
+        if (results.message) {
+            delete results.message
+            const copy = [...workouts];
+            copy.push(results);
+            setWorkouts(copy);
+            handleClose() };
     }
 
     return (

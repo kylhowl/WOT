@@ -5,7 +5,9 @@ const {
   createUser,
   createExercise,
   createRoutine,
-  addWorkout
+  addWorkout,
+  workoutEdit,
+  deleteWorkout
 } = require('../db');
 
 
@@ -69,6 +71,29 @@ apiRouter.post(`/user/:userId/workout`, async (req, res, next) => {
   
   try {
     const results = await addWorkout(userId, fields);
+    res.send(results);
+  } catch (err) {
+    next(err)
+  }
+})
+
+apiRouter.patch(`/user/:userId/workout/:workoutId`, async (req, res, next) => {
+  const { userId, workoutId } = req.params;
+  const fields = req.body;
+
+  try {
+    const results = await workoutEdit(workoutId, userId, fields);
+    res.send(results)
+  } catch (err) {
+    next(err)
+  }
+})
+
+apiRouter.delete(`/user/:userId/workout/:workoutId`, async (req, res, next) => {
+  const { userId, workoutId} = req.params;
+
+  try {
+    const results = await deleteWorkout(userId, workoutId);
     res.send(results);
   } catch (err) {
     next(err)

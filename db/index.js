@@ -53,7 +53,7 @@ const userLogin = async ( { username, password } ) => {
       if (user.password != password) {
           throw 'Incorrect password, do you need your hint?'
       }
-      console.log('getting workouts');
+      
       user = await _getWorkouts(user)
 
       delete user.password;
@@ -128,11 +128,14 @@ const createExercise = async ( userId, exercise ) => {
       const { rows : [newEx] } = await client.query(`
         INSERT INTO exercise("exerciseName", "userId")
         VALUES ($1, $2)
+        ON CONFLICT ("exerciseName", "userId") DO NOTHING
         RETURNING *;
       `,[ exercise, userId ]);
 
+      if (newEx) {
       return { message: 'Exercise created successfully',
-        exercise : newEx };
+        exercise : newEx }
+      } else { return { error: 'ERROR! DUPLICATE EXERCISE NAME!'}};
   } catch (err) {
       throw err     
   }
@@ -161,37 +164,69 @@ const createRoutine = async ( userId, routineName, exerciseIds) => {
 }
 
 const addWorkout = async (userId, fields = {}) => {
-  console.log(fields)
+  
   const insertColumns = Object.keys(fields).join(`, `);
   const insertValues = Object.values(fields);
   const insertString = insertValues.map((_,index)=>`$${index+1}`).join(`, `);
-  console.log('columns', insertColumns, 'values', insertValues, 'string', insertString);
-  
+    
   try {
-      await client.query(`
+      const { rows: [workout] } = await client.query(`
         INSERT INTO workout(${insertColumns})
         VALUES (${insertString})
         RETURNING *;
       `,insertValues);      
 
-  return {
-      message: 'Workout updated successfully'
-  }        
+      workout.userId = userId;
+      workout.message = 'Workout updated successfully';
+  return workout    
   } catch (err) {
       throw err
   }
 }
 
-const deleteWorkout = async (id) => {
+const workoutEdit = async (workoutId, userId, fields) => {
 
+  const updateString = Object.keys(fields).map((key, index)=> `${key} = $${index+1}`).join(`, `);
+  
   try {
-      await client.query(`
-          DELETE FROM workouts
-          WHERE id=${id};
-      `)
+    const { rows : [workout] } = await client.query(`
+      UPDATE workout
+        SET ${updateString}
+        WHERE "workoutId"=${workoutId}
+        RETURNING *;
+    `,Object.values(fields));
+
+    const { rows : workouts } = await client.query(`
+    SELECT * FROM exercise
+    NATURAL JOIN workout
+    WHERE exercise."userId"=$1;
+    `,[userId]);
+
+    return workouts
 
   } catch (err) {
-      throw err
+    throw err
+  }
+}
+
+const deleteWorkout = async (userId, workoutId) => {
+  console.log('userId', userId, ' workoutId', workoutId)
+  try {
+    await client.query(`
+      DELETE FROM workout
+      WHERE "workoutId"=${workoutId};
+    `)
+  
+    const { rows : workouts } = await client.query(`
+    SELECT * FROM exercise
+    NATURAL JOIN workout
+    WHERE exercise."userId"=$1;
+    `,[userId]);
+
+    return workouts
+
+  } catch (err) {
+    throw err
   }
 }
 
@@ -219,5 +254,6 @@ module.exports = {
   deleteWorkout,
   getHint,
   userLogin,
-  createUser
+  createUser,
+  workoutEdit
 }

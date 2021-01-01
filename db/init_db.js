@@ -31,8 +31,10 @@ async function buildTables() {
           exercise_id SERIAL PRIMARY KEY,
           "exerciseName" VARCHAR(255) NOT NULL,
           "userId" INTEGER,
+          UNIQUE ( "userId", "exerciseName" ),
           CONSTRAINT fk_user FOREIGN KEY("userId")
           REFERENCES users("userId")
+           
           );
       CREATE TABLE routine(
           "routineId" SERIAL PRIMARY KEY,
@@ -100,11 +102,11 @@ async function populateInitialData() {
           INSERT INTO exercise
           ("exerciseName", "userId")
           VALUES
-          ('pushups', 1),
-          ('situps', 1),
-          ('lunges', 1),
-          ('pushups',2),
-          ('situps', 2);
+          ('PUSHUPS', 1),
+          ('SITUPS', 1),
+          ('LUNGES', 1),
+          ('PUSHUPS',2),
+          ('SITUPS', 2);
           INSERT INTO workout
           (exercise_id, workout_date, reps, total_sets, notes)
           VALUES

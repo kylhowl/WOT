@@ -41,12 +41,12 @@ function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } 
         setFormMessage(''); // clears message if it was triggered.
 
         const exerciseIdArray = [];
-        Array.from(checkboxes).map((box) => {
+        Array.from(checkboxes).forEach((box) => {
             if (box.checked) { exerciseIdArray.push(parseInt(box.value)) }   
         })
         console.log('exerId array', exerciseIdArray)
 
-        const results = await createRoutine(userId, newRoutine, exerciseIdArray)
+        const results = await createRoutine(userId, newRoutine.toUpperCase(), exerciseIdArray)
 
         if (results.message) {
             setBulletin(`${newRoutine.toUpperCase()} Routine Created Succesfully!`)
@@ -59,7 +59,7 @@ function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } 
     return (
         <>
         <InputGroup size='sm'>
-        <FormControl placeholder='ROUTINE NAME' type='text' id='newroutine_input' onChange={(e)=>setNewRoutine(e.target.value)}/>
+        <FormControl placeholder='CORE, LEG DAY, etc...' type='text' id='newroutine_input' required onChange={(e)=>setNewRoutine(e.target.value)}/>
         <InputGroup.Append>
         <Button onClick={handleShow}>CREATE {newRoutine.toUpperCase()} ROUTINE</Button>
         </InputGroup.Append>
