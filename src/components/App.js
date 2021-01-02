@@ -48,12 +48,17 @@ const App = () => {
   }
   , [featureEx, featureRoutine, user.workouts])
 
+  useEffect(()=>{
+    localStorage.setItem('user', user);
+    console.log('updating local storage with', user)
+  },[user])
+
   const checkUser = () => {
     if (!user) { return (<div>LOGIN OR REGISTER TO GET STARTED</div>) } 
           else { return  featureEx || featureRoutine 
-          ? <Report exercise={featureEx ? featureEx : featureRoutine} setBulletin={setBulletin} workouts={workouts} setUser={setUser} setWorkouts={setWorkouts} user={user}/>
+          ? <Report exercise={featureEx ? featureEx : featureRoutine} setBulletin={setBulletin} workouts={workouts} setUser={setUser} setWorkouts={setWorkouts} user={user} setFeatureEx={setFeatureEx} setFeatureRoutine={setFeatureRoutine}/>
           :
-          <All workouts={workouts} setBulletin={setBulletin} setUser={setUser} setWorkouts={setWorkouts} user={user}/>}
+          <All workouts={workouts} setBulletin={setBulletin} setUser={setUser} setWorkouts={setWorkouts} user={user} />}
   }
 
   return (
@@ -74,7 +79,7 @@ const App = () => {
     </Row>   
     <Row className='exercise-info bg-warning'>
       <Col >
-        <Exercises user={user} setFeatureEx={setFeatureEx} setFeatureRoutine={setFeatureRoutine} setBulletin={setBulletin}/>
+        <Exercises user={user} setFeatureEx={setFeatureEx} setFeatureRoutine={setFeatureRoutine} setBulletin={setBulletin} setUser={setUser}/>
       </Col>
       <Col >
         {checkUser()}

@@ -5,7 +5,7 @@ import { addWorkout } from '../api';
 var dateFormat = require('dateformat');
 var now = new Date();
 
-const AddWO = ({exercise, workouts, setWorkouts}) => {
+const AddWO = ({exercise, workouts, setWorkouts, user, setUser}) => {
 
     const [ show, setShow ] = useState(false);
     const [ workout_date, setworkout_date ] = useState(dateFormat(now, 'isoDate'));
@@ -32,6 +32,9 @@ const AddWO = ({exercise, workouts, setWorkouts}) => {
             const copy = [...workouts];
             copy.push(results);
             setWorkouts(copy);
+            const userCopy = {...user};
+            userCopy.workouts = copy;
+            setUser(userCopy);           
             handleClose() };
     }
 

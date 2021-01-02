@@ -11,3 +11,5 @@ export { default as AddWO } from './AddWO';
 export { default as History } from './History';
 export { default as EditEx } from './EditEx';
 export { default as All } from './All';
+export { default as AddSession } from './AddSession';
+export { default as SessionForm } from './SessionForm';

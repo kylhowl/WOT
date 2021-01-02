@@ -12,6 +12,7 @@ async function buildTables() {
       await client.query(`
       DROP TABLE IF EXISTS weight_tracker;
       DROP TABLE IF EXISTS workout;
+      DROP TABLE IF EXISTS session;
       DROP TABLE IF EXISTS routine_exer;
       DROP TABLE IF EXISTS routine;
       DROP TABLE IF EXISTS exercise;
@@ -33,8 +34,7 @@ async function buildTables() {
           "userId" INTEGER,
           UNIQUE ( "userId", "exerciseName" ),
           CONSTRAINT fk_user FOREIGN KEY("userId")
-          REFERENCES users("userId")
-           
+          REFERENCES users("userId") 
           );
       CREATE TABLE routine(
           "routineId" SERIAL PRIMARY KEY,
@@ -66,12 +66,7 @@ async function buildTables() {
           distance NUMERIC(5,2),
           weight NUMERIC(5,2),
           notes VARCHAR(255),
-          CONSTRAINT fk_workout
-          FOREIGN KEY("routineId")
-          REFERENCES routine("routineId"),
-          CONSTRAINT fk_workout1
-          FOREIGN KEY(exercise_id)
-          REFERENCES exercise(exercise_id)
+          session_id INTEGER
           );
       CREATE TABLE weight_tracker(
           "userId" INTEGER,
@@ -80,6 +75,13 @@ async function buildTables() {
           CONSTRAINT fk_user
           FOREIGN KEY("userId")
           REFERENCES users("userId")
+          );
+      CREATE TABLE session(
+          session_id SERIAL PRIMARY KEY,
+          "routineId" INTEGER,
+          CONSTRAINT fk_routine_exer1
+          FOREIGN KEY("routineId")
+          REFERENCES routine("routineId")
           );
     `)
     console.log('TABLES CREATED')
@@ -91,6 +93,7 @@ async function buildTables() {
 async function populateInitialData() {
   try {
       // create useful starting data
+      console.log('populating tables');
       await client.query(`
           INSERT INTO users
           (username, password, hint)
@@ -111,6 +114,13 @@ async function populateInitialData() {
           (exercise_id, workout_date, reps, total_sets, notes)
           VALUES
           (1, '2020-12-22', 25, 3, 'This is a test' );
+          INSERT INTO routine
+          ("routineName" , "userId")
+          VALUES ('CORE', 1), ('CORE DAY', 2), ('LEG DAY', 1);
+          INSERT INTO routine_exer
+          ("routineId", exercise_id)
+          VALUES
+          (1 , 1), (1 , 2),(1 , 3), (2, 4), (2 ,5), (3 , 3);
       `)
 
   } catch (error) {

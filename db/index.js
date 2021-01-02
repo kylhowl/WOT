@@ -54,7 +54,29 @@ const userLogin = async ( { username, password } ) => {
           throw 'Incorrect password, do you need your hint?'
       }
       
-      user = await _getWorkouts(user)
+      const workouts = await _getWorkouts(user.userId)
+
+      user.workouts=workouts
+
+      const exercises = await _getExercises(user.userId)
+
+      user.exercises = exercises
+
+      const routines = await _getRoutines(user.userId)
+
+      user.routines = routines
+      
+      const sessions = await _getSessions(user.userId)
+
+      for (let routine of user.routines ) {
+        routine.sessions = []
+        for ( let session of sessions) {
+          if (routine.routineId === session.routineId) {
+            routine.sessions.push(session.session_id)
+          }
+        }
+      }
+
 
       delete user.password;
       delete user.hint;
@@ -67,9 +89,39 @@ const userLogin = async ( { username, password } ) => {
 
 }
 
-const _getWorkouts = async (user) => {
+const _getRoutines = async (userId) => {
 
-    let userId = user.userId;
+  try {
+    const { rows : routines } = await client.query(`
+      SELECT "routineId", "routineName"
+      FROM routine
+      WHERE "userId"=$1;
+    `,[userId]);
+
+    const { rows : routineExer } = await client.query(`
+    SELECT * FROM exercise
+    NATURAL INNER JOIN routine_exer
+    INNER JOIN routine ON routine."routineId" = routine_exer."routineId"
+    WHERE routine."userId"=$1;
+    `, [userId]);
+    
+    const routinesArr = [];
+    for (let routine of routines) {
+      routine.exercises =[];
+      for (let exer of routineExer) {
+        if ( routine.routineName === exer.routineName) {
+          routine.exercises.push({exerciseName : exer.exerciseName, exercise_id : exer.exercise_id})
+        }
+      }
+      routinesArr.push(routine);
+    }
+    return routinesArr
+  } catch (err) {
+    throw (err)
+  }
+}
+
+const _getWorkouts = async (userId) => {
 
   try { 
     const { rows : workouts } = await client.query(`
@@ -77,49 +129,40 @@ const _getWorkouts = async (user) => {
     NATURAL JOIN workout
     WHERE exercise."userId"=$1;
     `,[userId]);
-
-    const { rows : routines } = await client.query(`
-      SELECT "routineId", "routineName"
-      FROM routine
-      WHERE "userId"=$1;
-    `,[userId]);
-
-    const routineIds = routines.map((routine)=> routine.routineId);
-    const selectValues = routineIds.map((_,index)=> `$${index+1}`).join(`, `);
-
-    if (selectValues) {
-
-    const { rows : exerciseIds } = await client.query(`
-      SELECT exercise_id, "routineId"
-      FROM routine_exer
-      WHERE "routineId" IN (${selectValues});
-    `, routineIds);
-    
-    for (let routine of routines) {
-      routine.exerciseIds = []
-      for (let x of exerciseIds) {
-        if (x.routineId == routine.routineId) {
-          routine.exerciseIds.push(x.exercise_id)
-        }
-      }
-    }
-    }
-
-    const { rows : exercises } = await client.query(`
-      SELECT * FROM exercise
-      WHERE "userId"=$1;
-    `, [userId]);
-    
-    
-    user.workouts = workouts;
-    user.routines = routines;
-    user.exercises = exercises;
-    
-    return user;
+      
+    return workouts;
   
   } catch (err) {
       throw err
   }
+}
+
+const _getExercises = async (userId) => {
+  try {
+    const { rows : exercises } = await client.query(`
+    SELECT * FROM exercise
+    WHERE "userId"=$1;
+  `, [userId]);
+
+  return exercises;
+  } catch (err) {
+    throw (err)
+  }
+}
+
+const _getSessions = async (userId) => {
+
+  try {
+    const { rows : sessions } = await client.query(`
+    SELECT session_id, "routineId" FROM session
+    NATURAL JOIN routine
+    WHERE routine."userId" = $1
+    `,[userId])
+
+    return sessions
+  } catch (err) {
+    throw (err)
+  };
 }
 
 const createExercise = async ( userId, exercise ) => {
@@ -142,7 +185,7 @@ const createExercise = async ( userId, exercise ) => {
 }
 
 const createRoutine = async ( userId, routineName, exerciseIds) => {
-
+  
   try {
     const { rows : [routineId]} = await client.query(`
       INSERT INTO routine("routineName", "userId")
@@ -230,6 +273,52 @@ const deleteWorkout = async (userId, workoutId) => {
   }
 }
 
+const createSessionDB = async (userId, routineId, fields) => {
+  console.log('fields', fields) 
+  try {
+    const { rows :  [ {session_id} = x ]  } = await client.query(`
+      INSERT INTO session("routineId")
+      VALUES ($1)
+      RETURNING session_id;
+    `,[routineId]);
+    
+    const workouts = await _addSessionWorkouts( fields, routineId, session_id);
+    console.log('workouts results on db func', workouts);
+
+    return workouts;
+
+  } catch (err) {
+    throw(err)
+  }
+}
+
+const _addSessionWorkouts = async (fields, routineId, session_id) => {
+  const keyArray = ["routineId", "exercise_id", "workout_date", "reps", "total_sets", "duration", "distance", "weight", "notes", "session_id"]
+  const valueArray = [];
+  fields.forEach((wo)=> {
+    wo.routineId = routineId;
+    wo.session_id = session_id;
+    keyArray.forEach((key)=> {
+      valueArray.push(wo[key])
+    });
+  });
+
+  const valueString = fields.map((__,x)=> keyArray.map((_,index)=>`$${(x * keyArray.length)+(index+1)}` ).join(`, `)).join(`), (`)
+  
+  try {
+    const { rows : workouts } = await client.query(`
+      INSERT INTO workout("routineId", exercise_id, workout_date, reps, total_sets, duration, distance, weight, notes, session_id)
+      VALUES (${valueString})
+      RETURNING *;
+    `,valueArray)
+
+    return workouts;
+
+  } catch (err) {
+    throw (err);
+  }
+}
+
 // build this dynamically so password and hint can be ommitted;
 const createUser = async (fields = {}) => {
   const { username, password, hint } = fields
@@ -255,5 +344,6 @@ module.exports = {
   getHint,
   userLogin,
   createUser,
-  workoutEdit
+  workoutEdit,
+  createSessionDB
 }

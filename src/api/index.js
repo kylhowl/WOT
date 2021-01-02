@@ -87,8 +87,19 @@ export async function deleteWorkout(workout) {
         return data
     } catch (err) {
         throw err
+    }
 }
-}
+
+export async function createSession(userId, routineId, fields) {
+   
+    try {
+        const { data } = await axios.post(`/api/user/${userId}/routine/${routineId}`, fields)
+        console.log(data)
+        return data;
+    } catch (err) {
+        throw err
+    }
+}   
 
 // try {
 

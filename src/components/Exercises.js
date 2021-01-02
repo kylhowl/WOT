@@ -37,7 +37,7 @@ const Routine = ( { routine, setFeatureRoutine, setFeatureEx } ) => {
 
 
 
-const Exercises = ( { user, setFeatureEx, setFeatureRoutine, setBulletin } ) => {
+const Exercises = ( { user, setFeatureEx, setFeatureRoutine, setBulletin, setUser} ) => {
 
     const [ exercises , setExercises ] = useState([]);
     const [ routines, setRoutines ] = useState([]);
@@ -65,7 +65,7 @@ const Exercises = ( { user, setFeatureEx, setFeatureRoutine, setBulletin } ) => 
             <Col className='routines'>
                 <h2>ROUTINES</h2>
                 {routines.map((r)=> <Routine key={r.routineId} routine={r} setFeatureRoutine={setFeatureRoutine} setFeatureEx={setFeatureEx}/>)}
-                <AddRoutine userId={user.userId} setRoutines={setRoutines} routines={routines} exercises={exercises} setBulletin={setBulletin}/>
+                <AddRoutine userId={user.userId} setRoutines={setRoutines} routines={routines} exercises={exercises} user={user} setUser={setUser} setBulletin={setBulletin}/>
             </Col>
         </Row>
         </>

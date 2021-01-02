@@ -4,29 +4,30 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { createRoutine } from '../api'
 
-function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } ) {
+function AddRoutine ( { userId, exercises, routines, setBulletin, user, setUser } ) {
 
     const [ show, setShow ] = useState(false);
     const [ newRoutine, setNewRoutine ] = useState('');
     const [ formMessage , setFormMessage ] = useState('')
 
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleShow = () => {
+        for (let routine of routines) {
+            console.log('routine ',routine.routineName.toUpperCase(), ' newRoutine', newRoutine.toUpperCase() )
+            if (routine.routineName.toUpperCase() == newRoutine.toUpperCase()) {
+                setBulletin(`Routine ${newRoutine} Already Exists`);
+                return;
+            }
+        }
+        setShow(true)};
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.persist();
-        for (let routine of routines) {
-            console.log('routine ',routine.routineName.toUpperCase(), ' newRoutine', newRoutine.toUpperCase() )
-            if (routine.routineName.toUpperCase() === newRoutine.toUpperCase()) {
-                setBulletin(`Routine ${newRoutine} Already Exists`);
-                handleClose();
-                return;
-            }
-        }
+        
         // run through all the checkboxes to find at least one checked before preceeding
         const checkboxes = document.getElementById('routine_exer_form').getElementsByClassName('form-check-input'); // grabs all the checkboxes in form
-        console.log(checkboxes);
+        
         var isChecked = false;
         for (let cb of checkboxes) {
             if (cb.checked) {
@@ -35,7 +36,7 @@ function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } 
             }   
         }
         if (!isChecked) { 
-            setFormMessage('Must check at least 1 measure!');
+            setFormMessage('Must check at least 1 exercise!');
             return
             };
         setFormMessage(''); // clears message if it was triggered.
@@ -44,14 +45,18 @@ function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } 
         Array.from(checkboxes).forEach((box) => {
             if (box.checked) { exerciseIdArray.push(parseInt(box.value)) }   
         })
-        console.log('exerId array', exerciseIdArray)
-
+        
         const results = await createRoutine(userId, newRoutine.toUpperCase(), exerciseIdArray)
 
         if (results.message) {
             setBulletin(`${newRoutine.toUpperCase()} Routine Created Succesfully!`)
-            
             handleClose();
+            const copyUser = {...user};
+            delete results.message;
+            console.log( copyUser, user);
+            setUser(copyUser);
+            setNewRoutine('');
+            document.getElementById('newroutine_input').value = '';
         }
     }
     
@@ -75,7 +80,7 @@ function AddRoutine ( { userId, setRoutines, exercises, routines, setBulletin } 
                     <Form.Group id='routine_exer_form' required>
                         <Form.Label>EXERCISES</Form.Label>
                         {exercises.map((exer)=>
-                            <Form.Check key={exer.exerciseName} type='checkbox' label={exer.exerciseName.toUpperCase()} className='formCheckboxes' value={exer.exerciseId} />
+                            <Form.Check key={exer.exerciseName} type='checkbox' label={exer.exerciseName.toUpperCase()} className='formCheckboxes' value={exer.exercise_id} />
                         )}
                     </Form.Group>
                     <Button variant='primary' type='submit'>CREATE {newRoutine.toUpperCase()}</Button>
