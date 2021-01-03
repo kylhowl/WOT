@@ -13,3 +13,6 @@ export { default as EditEx } from './EditEx';
 export { default as All } from './All';
 export { default as AddSession } from './AddSession';
 export { default as SessionForm } from './SessionForm';
+export { default as RoutineHistory } from './RoutineHistory';
+export { default as EditSession } from './EditSession';
+

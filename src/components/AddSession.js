@@ -31,10 +31,10 @@ function AddSession ({exercise , workouts, setWorkouts, setBulletin, user, setUs
         console.log('results from createSession' ,results);
 
         if (Array.isArray(results)) {
-            const copyWorkouts = [...workouts];
-            copyWorkouts.push(results);
-            setWorkouts(copyWorkouts);
-            setBulletin(`${exercise.routineName.toUpperCase()} ADDED SUCCESSFULLY`);
+        //     const copyWorkouts = [...workouts];
+        //     copyWorkouts.push(results);
+        //     setWorkouts(copyWorkouts);
+            setBulletin(`${exercise.routineName.toUpperCase()} SESSION ADDED SUCCESSFULLY`);
             const copyUser = {...user}
             copyUser.workouts.push(...results)
             setUser(copyUser)

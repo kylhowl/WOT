@@ -65,7 +65,7 @@ const Exercises = ( { user, setFeatureEx, setFeatureRoutine, setBulletin, setUse
             <Col className='routines'>
                 <h2>ROUTINES</h2>
                 {routines.map((r)=> <Routine key={r.routineId} routine={r} setFeatureRoutine={setFeatureRoutine} setFeatureEx={setFeatureEx}/>)}
-                <AddRoutine userId={user.userId} setRoutines={setRoutines} routines={routines} exercises={exercises} user={user} setUser={setUser} setBulletin={setBulletin}/>
+                <AddRoutine userId={user.userId} routines={routines} exercises={exercises} user={user} setUser={setUser} setBulletin={setBulletin}/>
             </Col>
         </Row>
         </>

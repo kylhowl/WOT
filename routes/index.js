@@ -16,10 +16,10 @@ const {
 apiRouter.post('/login', async (req, res, next) => {
   
   const userFields = req.body
-  console.log('submission: ', userFields);
+  
   try {
       const user = await userLogin(userFields);
-      console.log(user);
+      // console.log(user);
       res.send( { user } )
   } catch (err) {
       next(err);
@@ -29,7 +29,7 @@ apiRouter.post('/login', async (req, res, next) => {
 apiRouter.post('/register', async (req, res, next) => {
 
   const userFields = req.body;
-  console.log('submission: ', userFields);
+  // console.log('submission: ', userFields);
   try {
       const user = await createUser(userFields);
 
@@ -37,7 +37,6 @@ apiRouter.post('/register', async (req, res, next) => {
   } catch (err) {
       next(err);
   }
-
 })
 
 apiRouter.post('/user/:userId/exercise', async (req, res, next) => {

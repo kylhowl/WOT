@@ -50,7 +50,7 @@ const App = () => {
 
   useEffect(()=>{
     localStorage.setItem('user', user);
-    console.log('updating local storage with', user)
+    
   },[user])
 
   const checkUser = () => {

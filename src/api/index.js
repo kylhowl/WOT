@@ -71,6 +71,7 @@ export async function addWorkout(userId, fields = {}) {
 }
 
 export async function workoutEdit(workout, fields) {
+    console.log('workout', workout)
 
     try {
         const { data } = await axios.patch(`/api/user/${workout.userId}/workout/${workout.workoutId}`, fields);

@@ -127,6 +127,7 @@ const _getWorkouts = async (userId) => {
     const { rows : workouts } = await client.query(`
     SELECT * FROM exercise
     NATURAL JOIN workout
+    LEFT JOIN routine ON routine."routineId" = workout."routineId"
     WHERE exercise."userId"=$1;
     `,[userId]);
       
@@ -199,7 +200,9 @@ const createRoutine = async ( userId, routineName, exerciseIds) => {
       VALUES (${insertValues});
     `,[routineId.routineId,...exerciseIds]);
 
-    return { routineName, routineId: routineId.routineId, exerciseIds, message : 'Routine created succesfully!'};
+    const routines = await _getRoutines(userId)
+
+    return { routines, message : 'Routine created succesfully!'};
 
   } catch (err) {
     throw err
@@ -274,7 +277,7 @@ const deleteWorkout = async (userId, workoutId) => {
 }
 
 const createSessionDB = async (userId, routineId, fields) => {
-  console.log('fields', fields) 
+  
   try {
     const { rows :  [ {session_id} = x ]  } = await client.query(`
       INSERT INTO session("routineId")
@@ -282,10 +285,12 @@ const createSessionDB = async (userId, routineId, fields) => {
       RETURNING session_id;
     `,[routineId]);
     
-    const workouts = await _addSessionWorkouts( fields, routineId, session_id);
-    console.log('workouts results on db func', workouts);
+    const workoutIdsObjArr = await _addSessionWorkouts( fields, routineId, session_id);
+    
+    const workoutIds = workoutIdsObjArr.map((obj)=> obj.workoutId);
+    const results = await _getWorkoutsById(workoutIds);
 
-    return workouts;
+    return results;
 
   } catch (err) {
     throw(err)
@@ -306,17 +311,37 @@ const _addSessionWorkouts = async (fields, routineId, session_id) => {
   const valueString = fields.map((__,x)=> keyArray.map((_,index)=>`$${(x * keyArray.length)+(index+1)}` ).join(`, `)).join(`), (`)
   
   try {
-    const { rows : workouts } = await client.query(`
+    const { rows : workoutIds } = await client.query(`
       INSERT INTO workout("routineId", exercise_id, workout_date, reps, total_sets, duration, distance, weight, notes, session_id)
       VALUES (${valueString})
-      RETURNING *;
+      RETURNING "workoutId";
     `,valueArray)
 
-    return workouts;
+    
+    return workoutIds;
 
   } catch (err) {
     throw (err);
   }
+}
+
+const _getWorkoutsById = async (workoutIds) => {
+
+  const selectValues = workoutIds.map((_,index)=> `$${index+1}`).join(`, `);
+  console.log(selectValues)
+  
+  try {
+    const { rows : addWorkouts } = await client.query(`
+      SELECT * FROM workout
+      NATURAL JOIN exercise
+      WHERE "workoutId" IN (${selectValues})
+    `,workoutIds);
+
+    console.log('addWorkouts', addWorkouts, 'workoutIds', workoutIds);
+
+    return addWorkouts;
+  } catch (err) {
+    throw (err) };
 }
 
 // build this dynamically so password and hint can be ommitted;

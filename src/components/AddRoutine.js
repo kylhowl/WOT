@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { createRoutine } from '../api'
 
-function AddRoutine ( { userId, exercises, routines, setBulletin, user, setUser } ) {
+function AddRoutine ( { userId, exercises, routines, setRoutines, setBulletin, user, setUser } ) {
 
     const [ show, setShow ] = useState(false);
     const [ newRoutine, setNewRoutine ] = useState('');
@@ -49,13 +49,15 @@ function AddRoutine ( { userId, exercises, routines, setBulletin, user, setUser 
         const results = await createRoutine(userId, newRoutine.toUpperCase(), exerciseIdArray)
 
         if (results.message) {
-            setBulletin(`${newRoutine.toUpperCase()} Routine Created Succesfully!`)
-            handleClose();
-            const copyUser = {...user};
+            console.log(results);
             delete results.message;
-            console.log( copyUser, user);
+            setBulletin(`${newRoutine.toUpperCase()} Routine Created Succesfully!`)
+           const copyUser = {...user};
+            copyUser.routines = results.routines
+            console.log(copyUser);
             setUser(copyUser);
-            setNewRoutine('');
+            setNewRoutine(''); 
+            handleClose(); 
             document.getElementById('newroutine_input').value = '';
         }
     }
