@@ -6,6 +6,55 @@ const client = new Client(DB_URL);
 
 // database methods
 
+// build this dynamically so password and hint can be ommitted;
+const createUser = async (fields = {}) => {
+  const { username, password, hint } = fields
+  const insertValues = Object.values(fields).map((val)=>{
+    if (val) {
+      return val
+    } else {
+      return 1234
+    }
+  })
+  try {
+      const {rows : [user] } = await client.query(`
+          INSERT INTO users(username, password, hint)
+          VALUES ($1,$2,$3)
+          ON CONFLICT (username)
+            DO NOTHING
+          RETURNING username, "userId", password;
+      `,insertValues)
+
+    
+    if (!user) {
+      return user
+    } else {
+      console.log('check 1', user)
+      await _newUserExercises(user.userId);
+      console.log('check 2');
+      const results = await userLogin({username : user.username , password : user.password});
+      return results;
+    }  
+  } catch (err) {
+      throw err
+  }
+}
+
+const _newUserExercises = async (userId) => {
+  console.log(userId)
+  try {
+    await client.query(`
+      INSERT INTO exercise("exerciseName", "userId")
+        VALUES
+        ('PUSHUPS', ${userId}),
+        ('PLANKS', ${userId}),
+        ('SITUPS', ${userId});
+    `)
+  } catch (err) {
+    throw (err)
+  }
+}
+
 const _getUser = async (username) => {
 
   try {
@@ -341,22 +390,6 @@ const _getWorkoutsById = async (workoutIds) => {
     return addWorkouts;
   } catch (err) {
     throw (err) };
-}
-
-// build this dynamically so password and hint can be ommitted;
-const createUser = async (fields = {}) => {
-  const { username, password, hint } = fields
-  try {
-      const {rows : user } = await client.query(`
-          INSERT INTO users(username, password, hint)
-          VALUE ($1,$2,$3)
-          RETURNING username, id;
-      `,[username, password, hint])
-
-      return user;
-  } catch (err) {
-      throw err
-  }
 }
 
 const updateSessionDB = async (userId, exercises) => {

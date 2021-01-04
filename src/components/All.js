@@ -21,7 +21,7 @@ function All ({ workouts, setWorkouts, setUser, user, setBulletin}) {
         <Button style={{backgroundColor: 'lightskyblue', color : 'black', border : 'none'}}>SOLO EXERCISES</Button>
         <Button style={{backgroundColor: 'lightgray', color : 'black', border : 'none'}}>ROUTINE EXERCISES</Button>
         {/* { workouts.length ? ( */}
-        <Table striped bordered hover className='text-center'>
+        <Table striped bordered hover className='text-center' size='sm'>
             <thead>
                 <tr>
                 <th></th>

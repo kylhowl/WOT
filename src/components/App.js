@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap'
-import {Title, Login, Exercises, Report, Bulletin, All } from './index';
+import {Title, Login, Exercises, Report, Bulletin, All, Logout } from './index';
 
 
 // import {  getSomething} from '../api';
@@ -18,7 +18,7 @@ const App = () => {
     if (user) {
       setBulletin(`WELCOME ${user.username.toUpperCase()}!`)
     } else {setBulletin(`PLEASE LOGIN OR REGISTER TO GET STARTED`)}
-  }, []);
+  }, [user]);
 
   useEffect( ()=> {
     const workoutArray = [];
@@ -56,29 +56,25 @@ const App = () => {
 
   return (
     <>
-    {/* <div className="App">
-      <h1>Hello, World!</h1>
-      <h2>{ message }</h2>
-    </div> */}
-    <Container className='vh-100' fluid>
-    <Row className='bg-primary align-items-center'>
+    <Container className='vh-100 bg-secondary vw-100' fluid >
+    <Row className='bg-primary align-items-center appHeader'>
       <Col className='text-center'>  <Title />  </Col>
-      <Col xs={5} className='justify-content-end'>  <Login setUser={setUser} setBulletin={setBulletin} />  </Col>
+      <Col xs={5} className='justify-content-end'> {user ? <Logout user={user} setUser={setUser} /> :<Login setUser={setUser} setBulletin={setBulletin} />}  </Col>
     </Row>
-    <Row>
+    <Row className='appBulletin'>
       <Col className='vw-100'>
         <Bulletin bulletin={bulletin}/>
       </Col>
     </Row>   
-    <Row className='exercise-info bg-warning'>
-      <Col >
+    <Row className='exercise-info bg-warning appBody'>
+      <Col xs={3}>
         <Exercises user={user} setFeatureEx={setFeatureEx} setFeatureRoutine={setFeatureRoutine} setBulletin={setBulletin} setUser={setUser}/>
       </Col>
-      <Col >
+      <Col xs={9}>
         {checkUser()}
       </Col>
     </Row>
-    <Row>
+    <Row className='appFooter'>
       <Col>Footer area</Col>
     </Row>
   </Container>

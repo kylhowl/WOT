@@ -42,7 +42,7 @@ const Report = ( { exercise, workouts, setWorkouts, setUser, user, setBulletin, 
     return (
     <>
     <h3>{`${(exercise.exerciseName || exercise.routineName).toUpperCase()} HISTORY`}</h3>
-    <Button onClick={handleClick} variant='secondary' >WORKOUT HISTORY</Button>
+    <Button onClick={handleClick} variant='secondary' >EVERY WORKOUT</Button>
     {'  '}
     {exercise.exerciseName ? <AddWO exercise={exercise} workouts={workouts} user={user} setUser={setUser} setWorkouts={setWorkouts}/> : <AddSession exercise={exercise} 
     user={user} setUser={setUser} setBulletin={setBulletin} setFeatureRoutine={setFeatureRoutine}/>}

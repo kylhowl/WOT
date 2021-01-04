@@ -55,7 +55,7 @@ useEffect(() => {
                         </Card.Header>
                         <Accordion.Collapse eventKey={`${index}`}>
                             <Card.Body>
-                                <Table striped bordered hover className='text-center'>
+                                <Table striped bordered hover className='text-center' size='sm'>
                                     <thead>
                                         <tr>
                                             <th><EditSession sessions={wo} user={user} routine={ex} setUser={setUser} setBulletin={setBulletin} setFeatureRoutine={setFeatureRoutine} /></th>

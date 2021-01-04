@@ -10,7 +10,7 @@ function History ({ workouts, setUser, setWorkouts, user, setBulletin }) {
 
     return (
         <>
-        <Table striped bordered hover className='text-center'>
+        <Table striped bordered hover className='text-center' size='sm'>
             <thead>
                 <tr>
                     <th></th>

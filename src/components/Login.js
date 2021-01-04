@@ -4,9 +4,6 @@ import { loginUser } from '../api';
 import { Register } from './index';
 
 
-// require('dotenv').config();
-// const { BASE_URL } = process.env;
-
 const Login = ({ setUser, setBulletin }) => {
 
     const handleSubmit = async (e) => {
@@ -42,7 +39,7 @@ const Login = ({ setUser, setBulletin }) => {
                     <Button className='align-center' type='submit' variant='primary'>LOGIN</Button> 
                 </Col>
                 <Col xs={2}>
-                    <Register />
+                    <Register setUser={setUser} setBulletin={setBulletin}/>
                 </Col>
             </Form.Row>
         </Form>    

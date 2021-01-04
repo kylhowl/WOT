@@ -15,4 +15,5 @@ export { default as SessionForm } from './SessionForm';
 export { default as RoutineHistory } from './RoutineHistory';
 export { default as EditSession } from './EditSession';
 export { default as Register } from './Register';
+export { default as Logout } from './Logout';
 

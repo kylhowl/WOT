@@ -21,24 +21,24 @@ export async function loginUser(info) {
     { throw err}
 }
 
-export async function newUser(data) {
+export async function newUser(userFields) {
     try {
-        const  results  = await axios.post('/api/register', data );
+        const  { data }  = await axios.post('/api/register', userFields );
 
-        return results; 
+        return data; 
     } catch (err) { 
         throw err 
     }
 }
 
-export async function workoutUpdate(data) {
-    try {
-        const results = await axios.patch(`/api/user/${data}/workout/${data}`)
-        return results
-    } catch (err) {
-        throw err
-    }
-}
+// export async function workoutUpdate(data) {
+//     try {
+//         const results = await axios.patch(`/api/user/${data}/workout/${data}`)
+//         return results
+//     } catch (err) {
+//         throw err
+//     }
+// }
 
 export async function createExercise(userId, exercise) {
 

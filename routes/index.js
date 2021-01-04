@@ -64,7 +64,6 @@ apiRouter.post(`/user/:userId/routine`, async (req, res, next) => {
   } catch (err) {
     next(err)
   }
-
 })
 
 apiRouter.post(`/user/:userId/workout`, async (req, res, next) => {
@@ -139,10 +138,10 @@ apiRouter.delete(`/user/:userId/session/:session_id`, async (req, res, next) => 
   }
 })
 
-apiRouter.get("/", (req, res, next) => {
-  res.send({
-    message: "API is under construction!"
-  });
-});
+// apiRouter.get("/", (req, res, next) => {
+//   res.send({
+//     message: "API is under construction!"
+//   });
+// });
 
 module.exports = apiRouter;

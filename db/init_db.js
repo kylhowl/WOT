@@ -25,7 +25,7 @@ async function buildTables() {
       CREATE TABLE users(
          "userId" SERIAL PRIMARY KEY,
          username VARCHAR UNIQUE NOT NULL,
-         password VARCHAR NOT NULL DEFAULT '1234',
+         password VARCHAR DEFAULT '1234',
          hint VARCHAR DEFAULT '1234'
          );
       CREATE TABLE exercise(
@@ -98,29 +98,24 @@ async function populateInitialData() {
           INSERT INTO users
           (username, password, hint)
           VALUES 
-          ('kyle', 'Kory78', 'he is your brother'),
-          ('kim', 'kyle924', 'just check the db');
-          INSERT INTO users(username)
-          VALUES ('test_account');
+          ('kyle', 'Kory78', 'he is your brother');
           INSERT INTO exercise
           ("exerciseName", "userId")
           VALUES
           ('PUSHUPS', 1),
           ('SITUPS', 1),
-          ('LUNGES', 1),
-          ('PUSHUPS',2),
-          ('SITUPS', 2);
+          ('LUNGES', 1);
           INSERT INTO workout
           (exercise_id, workout_date, reps, total_sets, notes)
           VALUES
           (1, '2020-12-22', 25, 3, 'This is a test' );
           INSERT INTO routine
           ("routineName" , "userId")
-          VALUES ('CORE', 1), ('CORE DAY', 2), ('LEG DAY', 1);
+          VALUES ('CORE', 1), ('LEG DAY', 1);
           INSERT INTO routine_exer
           ("routineId", exercise_id)
           VALUES
-          (1 , 1), (1 , 2),(1 , 3), (2, 4), (2 ,5), (3 , 3);
+          (1 , 1), (1 , 2),(1 , 3), (2, 2), (2 ,3);
       `)
 
   } catch (error) {
