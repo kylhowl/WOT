@@ -6,7 +6,7 @@ import { createSession } from '../api'
 var dateFormat = require('dateformat');
 var now = new Date();
 
-function AddSession ({exercise , workouts, setWorkouts, setBulletin, user, setUser}) {
+function AddSession ({ exercise, setBulletin, user, setUser, setFeatureRoutine}) {
 
     const [ workout_date , setworkout_date ] = useState(dateFormat(now, 'isoDate'));
     const [ show, setShow ] = useState(false);
@@ -17,7 +17,7 @@ function AddSession ({exercise , workouts, setWorkouts, setBulletin, user, setUs
     const handleSubmit = async (e) => {
         e.persist();
         e.preventDefault();
-        console.log('clicked submit');
+        
         const exerArr = [];
         exercise.exercises.map((exer)=> {
             const data = JSON.parse(document.getElementById(`${exer.exerciseName}-routineform`).getAttribute('data'));
@@ -30,14 +30,14 @@ function AddSession ({exercise , workouts, setWorkouts, setBulletin, user, setUs
 
         console.log('results from createSession' ,results);
 
-        if (Array.isArray(results)) {
-        //     const copyWorkouts = [...workouts];
-        //     copyWorkouts.push(results);
-        //     setWorkouts(copyWorkouts);
+        if (Array.isArray(results.results)) {
+        
             setBulletin(`${exercise.routineName.toUpperCase()} SESSION ADDED SUCCESSFULLY`);
             const copyUser = {...user}
-            copyUser.workouts.push(...results)
+            copyUser.workouts.push(...results.results)
             setUser(copyUser)
+            exercise.sessions.push(results.session_id);
+            setFeatureRoutine(exercise);
             handleClose();
         } else {
             setBulletin(`SOMETHING WENT WRONG, PLEASE TRY AGAIN`);
@@ -59,7 +59,7 @@ function AddSession ({exercise , workouts, setWorkouts, setBulletin, user, setUs
                 <p>Leave unused fields blank.</p>
                 <Form >
                     <Form.Group as={Row} className='p-2'>
-                        <Form.Label column sm={3}>Workout Date</Form.Label>
+                        <Form.Label column sm={3}>Session Date</Form.Label>
                         <Col sm={9}>
                         <Form.Control type='date' required defaultValue={dateFormat(now, 'isoDate')} max={dateFormat(now, 'isoDate')} onChange={(e)=>setworkout_date(e.target.value)} />
                         </Col>
@@ -68,7 +68,7 @@ function AddSession ({exercise , workouts, setWorkouts, setBulletin, user, setUs
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button type='submit' onClick={handleSubmit} >ADD WORKOUT </Button>{'  '}
+                <Button type='submit' onClick={handleSubmit} >ADD SESSION </Button>{'  '}
                 <Button variant='secondary' onClick={handleClose} > CANCEL </Button>
             </Modal.Footer>
         </Modal>

@@ -9,7 +9,7 @@ function All ({ workouts, setWorkouts, setUser, user, setBulletin}) {
     // const [ sortedWorkouts, setSortedWorkouts ] = useState([]);
 
     useEffect(()=>{
-        workouts.sort((a,b)=> new Date(a.workout_date).getTime() - new Date(b.workout_date).getTime() );
+        workouts.sort((a,b)=>  new Date(b.workout_date).getTime() - new Date(a.workout_date).getTime() );
         // setSortedWorkouts(sortArr);
             
         },[workouts]
@@ -18,8 +18,9 @@ function All ({ workouts, setWorkouts, setUser, user, setBulletin}) {
     return (
         <>
         <h3>WORKOUT HISTORY</h3>
-        <br/>
-        { workouts.length ? (
+        <Button style={{backgroundColor: 'lightskyblue', color : 'black', border : 'none'}}>SOLO EXERCISES</Button>
+        <Button style={{backgroundColor: 'lightgray', color : 'black', border : 'none'}}>ROUTINE EXERCISES</Button>
+        {/* { workouts.length ? ( */}
         <Table striped bordered hover className='text-center'>
             <thead>
                 <tr>
@@ -46,13 +47,13 @@ function All ({ workouts, setWorkouts, setUser, user, setBulletin}) {
                             <td>{wo.duration} </td>
                             <td>{wo.distance} </td>
                             <td>{wo.weight}</td>
-                            <td><OverlayTrigger placement='left' delay={{show:125 , hide: 400 }} overlay={<Tooltip>{wo.notes}</Tooltip>}><Button size='sm'>Notes</Button></OverlayTrigger></td>
+                            <td><OverlayTrigger placement='left' delay={{show:125 , hide: 400 }} overlay={<Tooltip>{wo.notes}</Tooltip>}><Button size='sm' variant={wo.notes ? 'primary' : 'secondary'} >Notes</Button></OverlayTrigger></td>
                         </tr>
                     )
                 })}
             </tbody>
-        </Table> )
-        : (<div>No workouts yet. Time to sweat.</div> ) }  {/* expand this to have a quick how to. */}
+        </Table> 
+        {/* : (<div>No workouts yet. Time to sweat.</div> ) }  expand this to have a quick how to. */}
         </>
     )
 }

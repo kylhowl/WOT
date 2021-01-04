@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap'
-import {Title, Login, Exercises, Report, Bulletin, All} from './index';
+import {Title, Login, Exercises, Report, Bulletin, All } from './index';
 
 
-
-import {
-  getSomething
-} from '../api';
+// import {  getSomething} from '../api';
 
 const App = () => {
-  const [message, setMessage] = useState('');
+  // const [message, setMessage] = useState('');
 
-  const [ user, setUser ] = useState('');
+  const [ user, setUser ] = useState(JSON.parse(localStorage.getItem('WOT')));
   const [ featureEx , setFeatureEx ] = useState('');
   const [ featureRoutine, setFeatureRoutine ] = useState('');
   const [ workouts, setWorkouts ] = useState([]);
-  const [ bulletin, setBulletin ] = useState('PLEASE LOGIN OR REGISTER TO GET STARTED');
+  const [ bulletin, setBulletin ] = useState();
 
   useEffect(() => {
-    getSomething()
-      .then(response => {
-        setMessage(response.message);
-      })
-      .catch(error => {
-        setMessage(error.message);
-      });
+    if (user) {
+      setBulletin(`WELCOME ${user.username.toUpperCase()}!`)
+    } else {setBulletin(`PLEASE LOGIN OR REGISTER TO GET STARTED`)}
   }, []);
 
   useEffect( ()=> {
@@ -49,7 +42,7 @@ const App = () => {
   , [featureEx, featureRoutine, user.workouts])
 
   useEffect(()=>{
-    localStorage.setItem('user', user);
+    localStorage.setItem('WOT', JSON.stringify(user));
     
   },[user])
 
@@ -63,14 +56,14 @@ const App = () => {
 
   return (
     <>
-    <div className="App">
+    {/* <div className="App">
       <h1>Hello, World!</h1>
       <h2>{ message }</h2>
-    </div>
+    </div> */}
     <Container className='vh-100' fluid>
-    <Row className='bg-primary'>
-      <Col>  <Title />  </Col>
-      <Col>  <Login setUser={setUser} setBulletin={setBulletin} />  </Col>
+    <Row className='bg-primary align-items-center'>
+      <Col className='text-center'>  <Title />  </Col>
+      <Col xs={5} className='justify-content-end'>  <Login setUser={setUser} setBulletin={setBulletin} />  </Col>
     </Row>
     <Row>
       <Col className='vw-100'>

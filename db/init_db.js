@@ -60,11 +60,11 @@ async function buildTables() {
           "routineId" INTEGER,
           exercise_id INTEGER NOT NULL,
           workout_date DATE NOT NULL DEFAULT CURRENT_DATE,
-          reps NUMERIC(4,0),
-          total_sets NUMERIC(3,0),
-          duration NUMERIC(5,2),
-          distance NUMERIC(5,2),
-          weight NUMERIC(5,2),
+          reps NUMERIC(4,0) DEFAULT 0,
+          total_sets NUMERIC(4,0) DEFAULT 0,
+          duration NUMERIC(5,2) DEFAULT 0,
+          distance NUMERIC(5,1) DEFAULT 0,
+          weight NUMERIC(5,2) DEFAULT 0,
           notes VARCHAR(255),
           session_id INTEGER
           );

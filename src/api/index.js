@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-export async function getSomething() {
-  try {
-    const { data } = await axios.get('/api');
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
+// export async function getSomething() {
+//   try {
+//     const { data } = await axios.get('/api');
+//     return data;
+//   } catch (error) {
+//     throw error;
+//   }
+// }
 
 
 // export functions that are used in app for specific calls to routes;
@@ -81,10 +81,10 @@ export async function workoutEdit(workout, fields) {
     }
 }
 
-export async function deleteWorkout(workout) {
+export async function deleteWorkout(workout, userId) {
 
     try {
-        const { data } = await axios.delete(`/api/user/${workout.userId}/workout/${workout.workoutId}`)
+        const { data } = await axios.delete(`/api/user/${userId}/workout/${workout.workoutId}`)
         return data
     } catch (err) {
         throw err
@@ -95,12 +95,32 @@ export async function createSession(userId, routineId, fields) {
    
     try {
         const { data } = await axios.post(`/api/user/${userId}/routine/${routineId}`, fields)
-        console.log(data)
         return data;
     } catch (err) {
         throw err
     }
 }   
+
+export async function updateSession(exerArr, sessionId, userId) {
+ 
+    try {
+        const { data } = await axios.patch(`/api/user/${userId}/session/${sessionId}`, exerArr);
+        return data
+    } catch (err) {
+        throw err
+    }
+}
+
+export async function deleteSession(userId, sessionId) {
+
+    try {
+        const { data } = await axios.delete(`/api/user/${userId}/session/${sessionId}`)
+        console.log('data?', data)
+        return data;
+    } catch (err) {
+        throw err
+    }
+}
 
 // try {
 

@@ -27,12 +27,13 @@ const EditEx = ({ workout, setWorkouts, user, setUser, setBulletin }) => {
         const results = await workoutEdit(workout, editWO)
 
         if (results) {
-            setWorkouts(results);
+            
             const copyUser = user;
             copyUser.workouts = results;
-            setUser(copyUser);
             setBulletin(`${workout.exerciseName} WORKOUT UPDATED SUCCESSFULLY!`);
             handleClose();
+            setWorkouts(results);
+            setUser(copyUser);
         } else {
             setBulletin(`UPDATE FAILED, PLEASE TRY AGAIN!`);
             handleClose();
@@ -45,7 +46,7 @@ const EditEx = ({ workout, setWorkouts, user, setUser, setBulletin }) => {
     }
 
     const handleDelete = async () => {
-        const results = await deleteWorkout(workout);
+        const results = await deleteWorkout(workout, user.userId);
         if (results) {
             setWorkouts(results);
             handleClose();
@@ -77,7 +78,7 @@ const EditEx = ({ workout, setWorkouts, user, setUser, setBulletin }) => {
                         </Col>
                         <Col>
                         <Form.Label>Repetitions</Form.Label>
-                        <Form.Control type='number' min='0' value={reps|| 0} onChange={(e)=>setreps(parseInt(e.target.value))}/>
+                        <Form.Control type='number' min='0' value={reps || 0} onChange={(e)=>setreps(parseInt(e.target.value))}/>
                         </Col>
                         <Col>
                         <Form.Label>Sets</Form.Label>
@@ -85,15 +86,15 @@ const EditEx = ({ workout, setWorkouts, user, setUser, setBulletin }) => {
                         </Col>
                         <Col>
                         <Form.Label>Duration</Form.Label>
-                        <Form.Control type='number' min='0' value={duration || 0} onChange={(e)=>setduration(parseInt(e.target.value))}/>
+                        <Form.Control type='number' min='0' value={duration || 0} step={0.01} onChange={(e)=>setduration(parseInt(e.target.value))}/>
                         </Col>
                         <Col>
                         <Form.Label>Distance</Form.Label>
-                        <Form.Control type='number' min='0' value={distance || 0} onChange={(e)=>setdistance(parseInt(e.target.value))}/>
+                        <Form.Control type='number' min='0' value={distance || 0} step={0.1} onChange={(e)=>setdistance(parseInt(e.target.value))}/>
                         </Col>
                         <Col>
                         <Form.Label>Weight</Form.Label>
-                        <Form.Control type='number' min='0' value={weight || 0} onChange={(e)=>setweight(parseInt(e.target.value))}/>
+                        <Form.Control type='number' min='0' value={weight || 0} step={0.25} onChange={(e)=>setweight(parseInt(e.target.value))}/>
                         </Col>
                     </Form.Row>
                     <Form.Row>

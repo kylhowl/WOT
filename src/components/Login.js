@@ -1,6 +1,8 @@
 import React from 'react';
-import { Form, Button } from 'react-bootstrap';
-import { loginUser } from '../api'
+import { Form, Button , Col } from 'react-bootstrap';
+import { loginUser } from '../api';
+import { Register } from './index';
+
 
 // require('dotenv').config();
 // const { BASE_URL } = process.env;
@@ -16,26 +18,35 @@ const Login = ({ setUser, setBulletin }) => {
         
         console.log('results from login', results);
         setUser(results.user)
-        setBulletin(`Welcome ${results.user.username.toUpperCase()}!`)
+        setBulletin(`WELCOME ${results.user.username.toUpperCase()}!`)
 
     }
 
     return (
-    <Form onSubmit={handleSubmit}>
-        <Form.Row>
-            <Form.Group>
-                <Form.Label>Username</Form.Label>
-                <Form.Control id='username-input' type='text' placeholder='Enter username' autoComplete='no'/>
-            </Form.Group>
-            
-            <Form.Group>
-                <Form.Label>Password</Form.Label>
-                <Form.Control id='password-input' type='password' defaultValue={1234} />
-            </Form.Group>
-            
-            <Button className='h-50 align-bottom' type='submit' variant='primary'>SUBMIT</Button>
-        </Form.Row>
-    </Form>
+    <>
+        <Form onSubmit={handleSubmit}>
+            <Form.Row className='align-items-center'>
+                <Col>
+                    <Form.Group className='align-content-end'>
+                        <Form.Label style={{color: 'white'}}>Username</Form.Label>
+                        <Form.Control id='username-input' type='text' placeholder='Enter username' autoComplete='no'/>
+                    </Form.Group>
+                </Col>
+                <Col>
+                    <Form.Group>
+                        <Form.Label style={{color: 'white'}}>Password</Form.Label>
+                        <Form.Control id='password-input' type='password' defaultValue={1234} />
+                    </Form.Group>
+                </Col > 
+                <Col xs={2}>
+                    <Button className='align-center' type='submit' variant='primary'>LOGIN</Button> 
+                </Col>
+                <Col xs={2}>
+                    <Register />
+                </Col>
+            </Form.Row>
+        </Form>    
+    </>
     )
 }
 

@@ -200,9 +200,7 @@ const createRoutine = async ( userId, routineName, exerciseIds) => {
       VALUES (${insertValues});
     `,[routineId.routineId,...exerciseIds]);
 
-    const routines = await _getRoutines(userId)
-
-    return { routines, message : 'Routine created succesfully!'};
+    return { routineId, message : 'Routine created succesfully!'};
 
   } catch (err) {
     throw err
@@ -290,7 +288,7 @@ const createSessionDB = async (userId, routineId, fields) => {
     const workoutIds = workoutIdsObjArr.map((obj)=> obj.workoutId);
     const results = await _getWorkoutsById(workoutIds);
 
-    return results;
+    return {session_id, results};
 
   } catch (err) {
     throw(err)
@@ -334,10 +332,11 @@ const _getWorkoutsById = async (workoutIds) => {
     const { rows : addWorkouts } = await client.query(`
       SELECT * FROM workout
       NATURAL JOIN exercise
-      WHERE "workoutId" IN (${selectValues})
+      LEFT JOIN routine ON routine."routineId" = workout."routineId"
+      WHERE "workoutId" IN (${selectValues});
     `,workoutIds);
 
-    console.log('addWorkouts', addWorkouts, 'workoutIds', workoutIds);
+    console.log('addWorkouts', addWorkouts);
 
     return addWorkouts;
   } catch (err) {
@@ -360,6 +359,60 @@ const createUser = async (fields = {}) => {
   }
 }
 
+const updateSessionDB = async (userId, exercises) => {
+  const updateColumns = [ 'workout_date', 'reps', 'total_sets', 'duration', 'distance', 'weight', 'notes'];
+  const columnString = updateColumns.map((x, index)=> `${x} = $${index+1}`).join(`, `);
+  try {
+    for ( let exer of exercises ) {
+      
+      const valueArray = updateColumns.map((str)=> exer[str])
+      try {
+      await client.query(`
+        UPDATE workout
+        SET ${columnString}
+        WHERE "workoutId" = ${exer.workoutId};
+      `, valueArray)
+      } catch (err) {
+        throw (err)
+      }};
+  
+    const workouts = await _getWorkouts(userId)
+
+    return {workouts , message : 'SESSION UPDATED'};
+  } catch (err) {
+    throw (err)
+  }
+}
+
+const deleteSessionDB = async (userId, session_id) => {
+  console.log('session', session_id);
+  try {
+    await client.query(`
+      DELETE FROM workout
+        WHERE session_id = ${session_id};
+      DELETE FROM session
+        WHERE session_id = ${session_id};
+    `)
+  
+  const routines = await _getRoutines(userId)
+  const sessions = await _getSessions(userId)
+
+  for (let routine of routines ) {
+    routine.sessions = []
+    for ( let session of sessions) {
+      if (routine.routineId === session.routineId) {
+        routine.sessions.push(session.session_id)
+      }
+    }
+  }
+
+  return { routines , message : 'SESSION DELETED!'};
+
+  } catch (err) {
+    throw (err)
+  }
+}
+
 module.exports = {
   client,
   addWorkout,
@@ -370,5 +423,7 @@ module.exports = {
   userLogin,
   createUser,
   workoutEdit,
-  createSessionDB
+  createSessionDB,
+  updateSessionDB,
+  deleteSessionDB
 }

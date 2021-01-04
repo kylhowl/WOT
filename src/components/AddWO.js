@@ -24,11 +24,12 @@ const AddWO = ({exercise, workouts, setWorkouts, user, setUser}) => {
         e.persist();
         e.preventDefault();
         const fields = {exercise_id: exercise.exercise_id, workout_date , reps, total_sets, duration, distance, weight, notes}
-        console.log('this is fields object', fields);
+
         const results = await addWorkout(exercise.userId, fields)
         console.log('results from addWO', results);
         if (results.message) {
             delete results.message
+            results.exerciseName = exercise.exerciseName;
             const copy = [...workouts];
             copy.push(results);
             setWorkouts(copy);

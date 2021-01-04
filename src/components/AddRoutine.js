@@ -51,10 +51,20 @@ function AddRoutine ( { userId, exercises, routines, setRoutines, setBulletin, u
         if (results.message) {
             console.log(results);
             delete results.message;
+            results.routineId = results.routineId.routineId;
+            results.exercises=[];
+            results.sessions=[];
+            results.routineName = newRoutine;
             setBulletin(`${newRoutine.toUpperCase()} Routine Created Succesfully!`)
-           const copyUser = {...user};
-            copyUser.routines = results.routines
-            console.log(copyUser);
+            for (let exer of exercises) {
+                for ( let id of exerciseIdArray) {
+                    if (id === exer.exercise_id) {
+                        results.exercises.push(exer)
+                    }
+                }
+            }
+            const copyUser = {...user};
+            copyUser.routines.push(results);
             setUser(copyUser);
             setNewRoutine(''); 
             handleClose(); 

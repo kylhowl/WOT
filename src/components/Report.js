@@ -35,7 +35,7 @@ const Report = ( { exercise, workouts, setWorkouts, setUser, user, setBulletin, 
         if (exercise.exerciseName) {
             return <History workouts={sortedWorkouts} setUser={setUser} setWorkouts={setWorkouts} user={user} setBulletin={setBulletin}/>
         } else if (exercise.routineName) { 
-            return <RoutineHistory exercise={exercise} user={user} setUser={setUser} setBulletin={setBulletin} />
+            return <RoutineHistory exercise={exercise} user={user} setUser={setUser} setBulletin={setBulletin} setFeatureRoutine={setFeatureRoutine} />
         } else { return (<div>No workouts yet. Time to sweat.</div>) }
     }
 
@@ -44,7 +44,8 @@ const Report = ( { exercise, workouts, setWorkouts, setUser, user, setBulletin, 
     <h3>{`${(exercise.exerciseName || exercise.routineName).toUpperCase()} HISTORY`}</h3>
     <Button onClick={handleClick} variant='secondary' >WORKOUT HISTORY</Button>
     {'  '}
-    {exercise.exerciseName ? <AddWO exercise={exercise} workouts={workouts} user={user} setUser={setUser} setWorkouts={setWorkouts}/> : <AddSession exercise={exercise} workouts={workouts} setWorkouts={setWorkouts} user={user} setUser={setUser} setBulletin={setBulletin}/>}
+    {exercise.exerciseName ? <AddWO exercise={exercise} workouts={workouts} user={user} setUser={setUser} setWorkouts={setWorkouts}/> : <AddSession exercise={exercise} 
+    user={user} setUser={setUser} setBulletin={setBulletin} setFeatureRoutine={setFeatureRoutine}/>}
     <br/>
     <br/>
     {checkStatus()}

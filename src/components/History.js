@@ -26,7 +26,7 @@ function History ({ workouts, setUser, setWorkouts, user, setBulletin }) {
             <tbody>
                 {workouts.map((wo)=>{
                     return (
-                        <tr key={wo.workoutId}>
+                        <tr key={wo.workoutId} style={{backgroundColor : 'lightskyblue'}}>
                             <td><EditEx workout={wo} setUser={setUser} setWorkouts={setWorkouts} user={user} setBulletin={setBulletin}/></td>
                             <td>{dateFormat(wo.workout_date,"shortDate")}</td>
                             <td>{wo.reps}</td>
@@ -34,7 +34,7 @@ function History ({ workouts, setUser, setWorkouts, user, setBulletin }) {
                             <td>{wo.duration} </td>
                             <td>{wo.distance} </td>
                             <td>{wo.weight}</td>
-                            <td><OverlayTrigger placement='left' delay={{show:125 , hide: 400 }} overlay={<Tooltip>{wo.notes}</Tooltip>}><Button size='sm'>Notes</Button></OverlayTrigger></td>
+                            <td><OverlayTrigger placement='left' delay={{show:125 , hide: 400 }} overlay={<Tooltip>{wo.notes}</Tooltip>}><Button size='sm' variant={wo.notes ? 'primary' : 'secondary'}>Notes</Button></OverlayTrigger></td>
                         </tr>
                     )
                 })}

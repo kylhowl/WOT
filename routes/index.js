@@ -8,7 +8,9 @@ const {
   addWorkout,
   workoutEdit,
   deleteWorkout,
-  createSessionDB
+  createSessionDB,
+  updateSessionDB,
+  deleteSessionDB
 } = require('../db');
 
 
@@ -111,7 +113,30 @@ apiRouter.post(`/user/:userId/routine/:routineId`, async (req, res, next) => {
   } catch (err) {
     next(err)
   }
+})
 
+apiRouter.patch(`/user/:userId/session/:session_id`, async (req, res, next) => {
+  const { userId } = req.params;
+  const updateArr = req.body;
+
+  try {
+    const results = await updateSessionDB(userId, updateArr);
+    res.send(results);
+  } catch (err) {
+    next(err);
+  }
+
+})
+
+apiRouter.delete(`/user/:userId/session/:session_id`, async (req, res, next) => {
+  const { userId, session_id } = req.params;
+
+  try {
+    const results = await deleteSessionDB(userId, session_id);
+    res.send(results);
+  } catch (err) {
+    next(err)
+  }
 })
 
 apiRouter.get("/", (req, res, next) => {
